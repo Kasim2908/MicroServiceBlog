@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  auth-service:
+    build: ./auth-service
+    ports:
+      - "3001:3001"
+
+  post-service:
+    build: ./post-service
+    ports:
+      - "3002:3002"
+
+  comment-service:
+    build: ./comment-service
+    ports:
+      - "3003:3003"
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"

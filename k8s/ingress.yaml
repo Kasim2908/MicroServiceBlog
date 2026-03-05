@@ -1,0 +1,32 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: blog-ingress
+spec:
+  rules:
+  - http:
+      paths:
+
+      - path: /auth
+        pathType: Prefix
+        backend:
+          service:
+            name: auth-service
+            port:
+              number: 3001
+
+      - path: /posts
+        pathType: Prefix
+        backend:
+          service:
+            name: post-service
+            port:
+              number: 3002
+
+      - path: /comments
+        pathType: Prefix
+        backend:
+          service:
+            name: comment-service
+            port:
+              number: 3003

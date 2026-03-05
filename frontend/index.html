@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microservices Blog Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --accent: #06b6d4;
+            --dark: #0f172a;
+            --dark-light: #1e293b;
+            --gray: #64748b;
+            --light: #f1f5f9;
+            --white: #ffffff;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --gradient-dark: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.15);
+            --shadow-xl: 0 25px 50px -12px rgba(0,0,0,0.25);
+            --shadow-glow: 0 0 40px rgba(99, 102, 241, 0.3);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--dark);
+            min-height: 100vh;
+            color: var(--white);
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-animation .gradient-sphere {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.5;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .bg-animation .sphere-1 {
+            width: 600px;
+            height: 600px;
+            background: var(--primary);
+            top: -200px;
+            right: -100px;
+            animation-delay: 0s;
+        }
+
+        .bg-animation .sphere-2 {
+            width: 500px;
+            height: 500px;
+            background: var(--secondary);
+            bottom: -150px;
+            left: -100px;
+            animation-delay: -5s;
+        }
+
+        .bg-animation .sphere-3 {
+            width: 400px;
+            height: 400px;
+            background: var(--accent);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: -10s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-30px) rotate(5deg); }
+            50% { transform: translateY(0) rotate(0deg); }
+            75% { transform: translateY(30px) rotate(-5deg); }
+        }
+
+        /* Navigation */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 1rem 2rem;
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            -webkit-text-fill-color: white;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50px;
+            font-weight: 500;
+        }
+
+        .user-avatar {
+            font-size: 1.5rem;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: var(--gradient-1);
+            color: white;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+        }
+
+        .btn-icon {
+            width: 44px;
+            height: 44px;
+            padding: 0;
+            border-radius: 12px;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 4rem 2rem;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+            line-height: 1.1;
+        }
+
+        .hero h1 span {
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--gray);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        /* Status Cards */
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .status-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .status-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .status-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1rem;
+        }
+
+        .status-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .status-icon.auth { background: var(--gradient-1); }
+        .status-icon.posts { background: var(--gradient-2); }
+        .status-icon.comments { background: var(--gradient-3); }
+
+        .status-info h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .status-info p {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-badge.online {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .status-badge.offline {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Main Layout */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Posts Section */
+        .section {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 24px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .section-title-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        /* Post Cards */
+        .posts-feed {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .post-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .post-card:hover {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(255,255,255,0.15);
+            transform: translateX(5px);
+        }
+
+        .post-card.active {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+        }
+
+        .post-category {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: var(--gradient-1);
+        }
+
+        .post-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+
+        .post-content {
+            font-size: 0.9rem;
+            color: var(--gray);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .post-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .post-author {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+        }
+
+        .post-author-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--gradient-1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+
+        .post-stats {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .post-stat {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: var(--gray);
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .post-stat:hover {
+            color: var(--secondary);
+        }
+
+        .post-stat.liked {
+            color: var(--secondary);
+        }
+
+        /* Create Post Form */
+        .create-form {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--gray);
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            color: var(--white);
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-select {
+            cursor: pointer;
+        }
+
+        .form-select option {
+            background: var(--dark);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* Comments Section */
+        .comments-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .comments-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .comments-list::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.05);
+            border-radius: 3px;
+        }
+
+        .comments-list::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.2);
+            border-radius: 3px;
+        }
+
+        .comment-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 1rem;
+        }
+
+        .comment-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 0.5rem;
+        }
+
+        .comment-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--gradient-3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .comment-author {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .comment-time {
+            font-size: 0.75rem;
+            color: var(--gray);
+            margin-left: auto;
+        }
+
+        .comment-text {
+            font-size: 0.9rem;
+            color: var(--light);
+            line-height: 1.5;
+        }
+
+        .comment-post-tag {
+            display: inline-block;
+            margin-top: 0.5rem;
+            padding: 2px 8px;
+            background: rgba(99, 102, 241, 0.2);
+            border-radius: 4px;
+            font-size: 0.7rem;
+            color: var(--primary);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(10px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 2rem;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--dark-light);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 24px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 450px;
+            animation: modalIn 0.3s ease;
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .modal-close:hover {
+            background: var(--danger);
+        }
+
+        .modal-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-tab {
+            flex: 1;
+            padding: 12px;
+            background: rgba(255,255,255,0.05);
+            border: none;
+            border-radius: 12px;
+            color: var(--gray);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-tab.active {
+            background: var(--gradient-1);
+            color: white;
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            z-index: 1001;
+        }
+
+        .toast {
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            background: var(--dark-light);
+            border: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: toastIn 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .toast.success { border-left: 3px solid var(--success); }
+        .toast.error { border-left: 3px solid var(--danger); }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.1);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--gray);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: var(--light);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--gray);
+            border-top: 1px solid rgba(255,255,255,0.05);
+            margin-top: 3rem;
+        }
+
+        footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar { padding: 1rem; }
+            .nav-actions .btn span { display: none; }
+            .container { padding: 1rem; }
+            .hero { padding: 2rem 1rem; }
+            .status-grid { grid-template-columns: 1fr; }
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <div class="gradient-sphere sphere-1"></div>
+        <div class="gradient-sphere sphere-2"></div>
+        <div class="gradient-sphere sphere-3"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="logo">
+                <div class="logo-icon">M</div>
+                <span>MicroBlog</span>
+            </div>
+            <div class="nav-actions">
+                <div id="user-display" class="user-info hidden">
+                    <span class="user-avatar" id="user-avatar"></span>
+                    <span id="user-name"></span>
+                </div>
+                <button class="btn btn-secondary btn-sm" id="auth-btn" onclick="openAuthModal()">
+                    <span>Login</span>
+                </button>
+                <button class="btn btn-danger btn-sm hidden" id="logout-btn" onclick="logout()">
+                    Logout
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1>Welcome to <span>MicroBlog</span></h1>
+            <p>A modern blog platform built with microservices architecture. Create, share, and engage with amazing content.</p>
+        </section>
+
+        <!-- Service Status -->
+        <div class="status-grid">
+            <div class="status-card">
+                <div class="status-card-header">
+                    <div class="status-icon auth">&#x1F512;</div>
+                    <div class="status-info">
+                        <h3>Auth Service</h3>
+                        <p>Port 3001 | User Authentication</p>
+                    </div>
+                </div>
+                <span class="status-badge" id="auth-status">
+                    <span class="status-dot"></span>
+                    Checking...
+                </span>
+            </div>
+            <div class="status-card">
+                <div class="status-card-header">
+                    <div class="status-icon posts">&#x1F4DD;</div>
+                    <div class="status-info">
+                        <h3>Post Service</h3>
+                        <p>Port 3002 | Blog Posts</p>
+                    </div>
+                </div>
+                <span class="status-badge" id="posts-status">
+                    <span class="status-dot"></span>
+                    Checking...
+                </span>
+            </div>
+            <div class="status-card">
+                <div class="status-card-header">
+                    <div class="status-icon comments">&#x1F4AC;</div>
+                    <div class="status-info">
+                        <h3>Comment Service</h3>
+                        <p>Port 3003 | User Comments</p>
+                    </div>
+                </div>
+                <span class="status-badge" id="comments-status">
+                    <span class="status-dot"></span>
+                    Checking...
+                </span>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-layout">
+            <!-- Posts Section -->
+            <section class="section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <div class="section-title-icon" style="background: var(--gradient-2);">&#x1F4F0;</div>
+                        Latest Posts
+                    </h2>
+                    <button class="btn btn-primary btn-sm" onclick="toggleCreatePost()">
+                        + New Post
+                    </button>
+                </div>
+
+                <!-- Create Post Form -->
+                <div class="create-form hidden" id="create-post-form">
+                    <div class="form-group">
+                        <label class="form-label">Post Title</label>
+                        <input type="text" class="form-input" id="post-title" placeholder="Enter an engaging title...">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <select class="form-select" id="post-category">
+                            <option value="General">General</option>
+                            <option value="Technology">Technology</option>
+                            <option value="DevOps">DevOps</option>
+                            <option value="Tutorial">Tutorial</option>
+                            <option value="News">News</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Content</label>
+                        <textarea class="form-textarea" id="post-content" placeholder="Write your amazing post content..."></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="createPost()">Publish Post</button>
+                </div>
+
+                <!-- Posts Feed -->
+                <div class="posts-feed" id="posts-feed">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">&#x1F4E6;</div>
+                        <h3>Loading Posts...</h3>
+                        <p>Fetching the latest content from Post Service</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Comments Section -->
+                <section class="section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <div class="section-title-icon" style="background: var(--gradient-3);">&#x1F4AC;</div>
+                            Recent Comments
+                        </h2>
+                    </div>
+
+                    <!-- Add Comment Form -->
+                    <div class="create-form" id="add-comment-form">
+                        <div class="form-group">
+                            <label class="form-label">Add a Comment</label>
+                            <textarea class="form-textarea" id="comment-text" placeholder="Share your thoughts..." style="min-height: 70px;"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Select Post</label>
+                            <select class="form-select" id="comment-post-id">
+                                <option value="">Choose a post...</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary btn-sm" onclick="addComment()">Post Comment</button>
+                    </div>
+
+                    <div class="comments-list" id="comments-list">
+                        <div class="empty-state">
+                            <div class="spinner"></div>
+                            <p style="margin-top: 1rem;">Loading comments...</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <p>Built with <span style="color: var(--secondary);">&#x2764;</span> using Microservices Architecture</p>
+            <p style="margin-top: 0.5rem; font-size: 0.85rem;">Docker &bull; Kubernetes &bull; Node.js &bull; Express</p>
+        </footer>
+    </div>
+
+    <!-- Auth Modal -->
+    <div class="modal-overlay" id="auth-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Welcome Back</h2>
+                <button class="modal-close" onclick="closeAuthModal()">&times;</button>
+            </div>
+            <div class="modal-tabs">
+                <button class="modal-tab active" onclick="switchAuthTab('login')">Login</button>
+                <button class="modal-tab" onclick="switchAuthTab('register')">Register</button>
+            </div>
+
+            <!-- Login Form -->
+            <div id="login-form">
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" class="form-input" id="login-username" placeholder="Enter username">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" id="login-password" placeholder="Enter password">
+                </div>
+                <button class="btn btn-primary" style="width: 100%;" onclick="login()">Sign In</button>
+                <p style="text-align: center; margin-top: 1rem; font-size: 0.85rem; color: var(--gray);">
+                    Demo: admin/admin123 or john/john123
+                </p>
+            </div>
+
+            <!-- Register Form -->
+            <div id="register-form" class="hidden">
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" class="form-input" id="register-username" placeholder="Choose a username">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" id="register-email" placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" id="register-password" placeholder="Create a password">
+                </div>
+                <button class="btn btn-primary" style="width: 100%;" onclick="register()">Create Account</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script>
+        // Configuration - Update this URL based on your environment
+        // For Docker Compose: Use localhost with mapped ports
+        // For Kubernetes: Use minikube IP with NodePort
+        const CONFIG = {
+            // Detect if running locally or in Kubernetes
+            getBaseUrl: function(port) {
+                // Try localhost first (Docker Compose)
+                const hostname = window.location.hostname;
+                if (hostname === 'localhost' || hostname === '127.0.0.1') {
+                    return `http://localhost:${port}`;
+                }
+                // For Kubernetes/Minikube
+                return `http://${hostname}:${port}`;
+            },
+            AUTH_URL: function() { return this.getBaseUrl(3001); },
+            POSTS_URL: function() { return this.getBaseUrl(3002); },
+            COMMENTS_URL: function() { return this.getBaseUrl(3003); }
+        };
+
+        // For Kubernetes with NodePort, uncomment and update:
+        // const MINIKUBE_IP = "192.168.49.2";
+        // CONFIG.AUTH_URL = () => `http://${MINIKUBE_IP}:30001`;
+        // CONFIG.POSTS_URL = () => `http://${MINIKUBE_IP}:30002`;
+        // CONFIG.COMMENTS_URL = () => `http://${MINIKUBE_IP}:30003`;
+
+        let currentUser = null;
+        let posts = [];
+        let comments = [];
+
+        // Toast Notifications
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <span>${type === 'success' ? '&#x2705;' : '&#x274C;'}</span>
+                <span>${message}</span>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // Check Service Status
+        async function checkServiceStatus() {
+            const services = [
+                { name: 'auth', url: CONFIG.AUTH_URL() + '/auth', element: 'auth-status' },
+                { name: 'posts', url: CONFIG.POSTS_URL() + '/posts/health', element: 'posts-status' },
+                { name: 'comments', url: CONFIG.COMMENTS_URL() + '/comments/health', element: 'comments-status' }
+            ];
+
+            for (const service of services) {
+                const statusEl = document.getElementById(service.element);
+                try {
+                    const response = await fetch(service.url, { timeout: 5000 });
+                    if (response.ok) {
+                        statusEl.className = 'status-badge online';
+                        statusEl.innerHTML = '<span class="status-dot"></span> Online';
+                    } else {
+                        throw new Error();
+                    }
+                } catch (err) {
+                    statusEl.className = 'status-badge offline';
+                    statusEl.innerHTML = '<span class="status-dot"></span> Offline';
+                }
+            }
+        }
+
+        // Auth Functions
+        function openAuthModal() {
+            document.getElementById('auth-modal').classList.add('active');
+        }
+
+        function closeAuthModal() {
+            document.getElementById('auth-modal').classList.remove('active');
+        }
+
+        function switchAuthTab(tab) {
+            const tabs = document.querySelectorAll('.modal-tab');
+            tabs.forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            document.getElementById('login-form').classList.toggle('hidden', tab !== 'login');
+            document.getElementById('register-form').classList.toggle('hidden', tab !== 'register');
+        }
+
+        async function login() {
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+
+            if (!username || !password) {
+                showToast('Please fill in all fields', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(CONFIG.AUTH_URL() + '/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    currentUser = data.user;
+                    updateUserUI();
+                    closeAuthModal();
+                    showToast(`Welcome back, ${currentUser.username}!`);
+                } else {
+                    showToast(data.message, 'error');
+                }
+            } catch (err) {
+                showToast('Failed to connect to Auth Service', 'error');
+            }
+        }
+
+        async function register() {
+            const username = document.getElementById('register-username').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+
+            if (!username || !email || !password) {
+                showToast('Please fill in all fields', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(CONFIG.AUTH_URL() + '/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    currentUser = data.user;
+                    updateUserUI();
+                    closeAuthModal();
+                    showToast(`Welcome, ${currentUser.username}! Account created.`);
+                } else {
+                    showToast(data.message, 'error');
+                }
+            } catch (err) {
+                showToast('Failed to connect to Auth Service', 'error');
+            }
+        }
+
+        async function logout() {
+            try {
+                await fetch(CONFIG.AUTH_URL() + '/auth/logout', { method: 'POST' });
+            } catch (err) {}
+            currentUser = null;
+            updateUserUI();
+            showToast('Logged out successfully');
+        }
+
+        function updateUserUI() {
+            const userDisplay = document.getElementById('user-display');
+            const authBtn = document.getElementById('auth-btn');
+            const logoutBtn = document.getElementById('logout-btn');
+
+            if (currentUser) {
+                userDisplay.classList.remove('hidden');
+                document.getElementById('user-avatar').textContent = currentUser.avatar;
+                document.getElementById('user-name').textContent = currentUser.username;
+                authBtn.classList.add('hidden');
+                logoutBtn.classList.remove('hidden');
+            } else {
+                userDisplay.classList.add('hidden');
+                authBtn.classList.remove('hidden');
+                logoutBtn.classList.add('hidden');
+            }
+        }
+
+        // Posts Functions
+        async function loadPosts() {
+            const feed = document.getElementById('posts-feed');
+            try {
+                const response = await fetch(CONFIG.POSTS_URL() + '/posts');
+                const data = await response.json();
+                posts = data.posts;
+                renderPosts();
+                updatePostSelector();
+            } catch (err) {
+                feed.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">&#x26A0;&#xFE0F;</div>
+                        <h3>Could not load posts</h3>
+                        <p>Post Service is unavailable. Please try again later.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderPosts() {
+            const feed = document.getElementById('posts-feed');
+            if (posts.length === 0) {
+                feed.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">&#x1F4AD;</div>
+                        <h3>No posts yet</h3>
+                        <p>Be the first to create a post!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            feed.innerHTML = posts.map(post => `
+                <div class="post-card" onclick="selectPost(${post.id})">
+                    <div class="post-header">
+                        <span class="post-category">${post.category}</span>
+                    </div>
+                    <h3 class="post-title">${post.title}</h3>
+                    <p class="post-content">${post.content}</p>
+                    <div class="post-footer">
+                        <div class="post-author">
+                            <div class="post-author-avatar">&#x1F464;</div>
+                            <span>${post.author}</span>
+                        </div>
+                        <div class="post-stats">
+                            <span class="post-stat" onclick="likePost(${post.id}, event)">
+                                &#x2764;&#xFE0F; ${post.likes}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleCreatePost() {
+            const form = document.getElementById('create-post-form');
+            form.classList.toggle('hidden');
+        }
+
+        async function createPost() {
+            const title = document.getElementById('post-title').value;
+            const content = document.getElementById('post-content').value;
+            const category = document.getElementById('post-category').value;
+
+            if (!title || !content) {
+                showToast('Please fill in title and content', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(CONFIG.POSTS_URL() + '/posts', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        title,
+                        content,
+                        category,
+                        author: currentUser ? currentUser.username : 'Anonymous'
+                    })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    showToast('Post created successfully!');
+                    document.getElementById('post-title').value = '';
+                    document.getElementById('post-content').value = '';
+                    toggleCreatePost();
+                    loadPosts();
+                } else {
+                    showToast(data.message, 'error');
+                }
+            } catch (err) {
+                showToast('Failed to create post', 'error');
+            }
+        }
+
+        async function likePost(postId, event) {
+            event.stopPropagation();
+            try {
+                const response = await fetch(CONFIG.POSTS_URL() + `/posts/${postId}/like`, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                if (data.success) {
+                    loadPosts();
+                }
+            } catch (err) {
+                showToast('Failed to like post', 'error');
+            }
+        }
+
+        function selectPost(postId) {
+            document.getElementById('comment-post-id').value = postId;
+            const cards = document.querySelectorAll('.post-card');
+            cards.forEach(card => card.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+
+        function updatePostSelector() {
+            const selector = document.getElementById('comment-post-id');
+            selector.innerHTML = '<option value="">Choose a post...</option>' +
+                posts.map(p => `<option value="${p.id}">${p.title}</option>`).join('');
+        }
+
+        // Comments Functions
+        async function loadComments() {
+            const list = document.getElementById('comments-list');
+            try {
+                const response = await fetch(CONFIG.COMMENTS_URL() + '/comments');
+                const data = await response.json();
+                comments = data.comments;
+                renderComments();
+            } catch (err) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">&#x26A0;&#xFE0F;</div>
+                        <h3>Could not load comments</h3>
+                        <p>Comment Service is unavailable</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderComments() {
+            const list = document.getElementById('comments-list');
+            if (comments.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">&#x1F4AC;</div>
+                        <h3>No comments yet</h3>
+                        <p>Be the first to comment!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = comments.slice(0, 10).map(comment => {
+                const post = posts.find(p => p.id === comment.postId);
+                return `
+                    <div class="comment-card">
+                        <div class="comment-header">
+                            <div class="comment-avatar">${comment.avatar}</div>
+                            <span class="comment-author">${comment.author}</span>
+                            <span class="comment-time">${formatTime(comment.createdAt)}</span>
+                        </div>
+                        <p class="comment-text">${comment.text}</p>
+                        ${post ? `<span class="comment-post-tag">on: ${post.title}</span>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function addComment() {
+            const text = document.getElementById('comment-text').value;
+            const postId = document.getElementById('comment-post-id').value;
+
+            if (!text || !postId) {
+                showToast('Please write a comment and select a post', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(CONFIG.COMMENTS_URL() + '/comments', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        postId: parseInt(postId),
+                        text,
+                        author: currentUser ? currentUser.username : 'Anonymous',
+                        avatar: currentUser ? currentUser.avatar : '&#x1F642;'
+                    })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    showToast('Comment added successfully!');
+                    document.getElementById('comment-text').value = '';
+                    loadComments();
+                } else {
+                    showToast(data.message, 'error');
+                }
+            } catch (err) {
+                showToast('Failed to add comment', 'error');
+            }
+        }
+
+        function formatTime(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diff = Math.floor((now - date) / 1000);
+
+            if (diff < 60) return 'Just now';
+            if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+            if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+            return `${Math.floor(diff / 86400)}d ago`;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            checkServiceStatus();
+            loadPosts();
+            loadComments();
+
+            // Refresh data periodically
+            setInterval(checkServiceStatus, 30000);
+        });
+
+        // Close modal on escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeAuthModal();
+        });
+
+        // Close modal on outside click
+        document.getElementById('auth-modal').addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal-overlay')) closeAuthModal();
+        });
+    </script>
+</body>
+</html>
