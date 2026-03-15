@@ -15,6 +15,6 @@ spec:
       containers:
       - name: comment-service
         image: comment-service
-        imagePullPolicy: Never
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3003

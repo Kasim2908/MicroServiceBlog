@@ -15,6 +15,6 @@ spec:
       containers:
       - name: post-service
         image: post-service
-        imagePullPolicy: Never
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3002

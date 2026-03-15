@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head><title>Service Test</title></head>
+<body>
+<h1>Testing Microservices</h1>
+<button onclick="testAuth()">Test Auth (30001)</button>
+<button onclick="testPosts()">Test Posts (30002)</button>
+<button onclick="testComments()">Test Comments (30003)</button>
+<pre id="result"></pre>
+<script>
+const IP = "192.168.49.2";
+async function testAuth() {
+    try {
+        const res = await fetch(`http://${IP}:30001/auth`);
+        const data = await res.json();
+        document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+    } catch(e) {
+        document.getElementById('result').textContent = 'Error: ' + e.message;
+    }
+}
+async function testPosts() {
+    try {
+        const res = await fetch(`http://${IP}:30002/posts`);
+        const data = await res.json();
+        document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+    } catch(e) {
+        document.getElementById('result').textContent = 'Error: ' + e.message;
+    }
+}
+async function testComments() {
+    try {
+        const res = await fetch(`http://${IP}:30003/comments`);
+        const data = await res.json();
+        document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+    } catch(e) {
+        document.getElementById('result').textContent = 'Error: ' + e.message;
+    }
+}
+</script>
+</body>
+</html>

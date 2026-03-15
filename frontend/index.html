@@ -990,8 +990,8 @@
                 <button class="modal-close" onclick="closeAuthModal()">&times;</button>
             </div>
             <div class="modal-tabs">
-                <button class="modal-tab active" onclick="switchAuthTab('login')">Login</button>
-                <button class="modal-tab" onclick="switchAuthTab('register')">Register</button>
+                <button class="modal-tab active" onclick="switchAuthTab('login', event)">Login</button>
+                <button class="modal-tab" onclick="switchAuthTab('register', event)">Register</button>
             </div>
 
             <!-- Login Form -->
@@ -1109,10 +1109,10 @@
             document.getElementById('auth-modal').classList.remove('active');
         }
 
-        function switchAuthTab(tab) {
+        function switchAuthTab(tab, evt) {
             const tabs = document.querySelectorAll('.modal-tab');
             tabs.forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
+            evt.target.classList.add('active');
 
             document.getElementById('login-form').classList.toggle('hidden', tab !== 'login');
             document.getElementById('register-form').classList.toggle('hidden', tab !== 'register');
@@ -1240,7 +1240,7 @@
             }
 
             feed.innerHTML = posts.map(post => `
-                <div class="post-card" onclick="selectPost(${post.id})">
+                <div class="post-card" onclick="selectPost(${post.id}, event)">
                     <div class="post-header">
                         <span class="post-category">${post.category}</span>
                     </div>
@@ -1318,11 +1318,11 @@
             }
         }
 
-        function selectPost(postId) {
+        function selectPost(postId, evt) {
             document.getElementById('comment-post-id').value = postId;
             const cards = document.querySelectorAll('.post-card');
             cards.forEach(card => card.classList.remove('active'));
-            event.currentTarget.classList.add('active');
+            evt.currentTarget.classList.add('active');
         }
 
         function updatePostSelector() {
