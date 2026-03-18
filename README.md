@@ -1,4 +1,4 @@
-# Microservices Blog - DevOps Project
+# MicroServicesBlog
 
 This project demonstrates a microservices architecture deployed with Docker and Kubernetes.
 It simulates a simple blog platform where services communicate through Kubernetes Ingress.
