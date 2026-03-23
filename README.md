@@ -1,7 +1,7 @@
 # MicroServicesBlog
 
 This project demonstrates a microservices architecture deployed with Docker and Kubernetes.
-It simulates a simple blog platform where services communicate through Kubernetes Ingress.
+It simulates a simple blog platform where services communicate through Kubernetes Ingress controller.
 
 The main goal is to practice DevOps workflows, containerization, and Kubernetes deployment.
 
